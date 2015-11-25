@@ -1106,7 +1106,7 @@
       </releases>
       <id>core-maven-repo</id>
       <name>GeoNetwork remote repository</name>
-      <url>https://raw.githubusercontent.com/geonetwork/core-maven-repo/master</url>
+      <url>https://raw.githubusercontent.com/geonetwork/core-maven-repo/gt-wms-sld</url>
     </repository>
     
     <repository>
@@ -1163,6 +1163,7 @@
     <module>inspire-atom</module>
     <module>solr</module>
     <module>camel-harvesters</module>
+    <module>messaging</module>
   </modules>
 
   <profiles>
@@ -1215,6 +1216,7 @@
     <solr.url>http://localhost:${solr.port}/solr</solr.url>
     <solr.collection>srv-catalog</solr.collection>
     <jms.url>tcp://localhost:61616</jms.url>
+    <activemq.version>5.6.0</activemq.version>
     <spring.version>3.2.5.RELEASE</spring.version>
     <spring.security.version>3.1.4.RELEASE</spring.security.version>
     <metrics.version>2.1.1</metrics.version>
