@@ -106,7 +106,7 @@ public class Generate {
                                                  HttpServletRequest request){
 
         try {
-            Style[] originalStyles = SLDUtil.parseSLD(new URL(serverURL), layers);
+            Style[] originalStyles = SLDUtil.parseSLD(new URL(serverURL), layers,null);
 
             Filter customFilter  = SLDUtil.generateCustomFilter(new JSONObject(filters));
             Style[] newFilters = SLDUtil.addAndFilter(originalStyles, customFilter);

@@ -1,15 +1,18 @@
 package org.geonetwork.map.wms;
-import org.geotools.data.ows.Specification;
-import org.geotools.data.wms.WMS1_1_1;
-import org.geotools.data.wms.WebMapServer;
-import org.geotools.data.wms.request.GetStylesRequest;
-import org.geotools.data.wms.response.GetStylesResponse;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.ows.ServiceException;
-import org.geotools.styling.*;
+
+import jeeves.server.context.ServiceContext;
 import org.geotools.styling.builder.NamedLayerBuilder;
 import org.geotools.styling.builder.StyleBuilder;
 import org.geotools.styling.builder.StyledLayerDescriptorBuilder;
+
+import org.fao.geonet.lib.Lib;
+import org.fao.geonet.utils.GeonetHttpRequestFactory;
+import org.fao.geonet.utils.XmlRequest;
+import org.geotools.data.ows.Specification;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.ows.ServiceException;
+import org.geotools.styling.*;
+import org.jdom.Element;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +39,127 @@ public class SLDUtil {
      * @throws ServiceException if the server responds with an error
      * @throws ParseException if unable to parse content type header from server
      */
-    public static Style[] parseSLD(URL url, String layers) throws IOException, ServiceException, ParseException {
+    public static Style[] parseSLD(URL url, String layers, ServiceContext context) throws IOException, ServiceException, ParseException {
+
+        // Generate getStyle URL from base url
+        String[] urlParts = url.toString().split("\\?");
+        String finalUrl = urlParts[0] + "?SERVICE=WMS&REQUEST=GetStyles&VERSION=1.1.1&LAYERS=" + layers;
+
+        // issue GetStyle request
+        XmlRequest req = context.getBean(GeonetHttpRequestFactory.class).createXmlRequest();
+        req.setUrl(new URL(finalUrl));
+        req.setMethod(XmlRequest.Method.GET);
+        Element xml = req.execute();
+
+        StyleFactory sf = CommonFactoryFinder.getStyleFactory();
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+
+        List els = xml.getChildren();
+
+        int a =0;
+
+
+
+
+        /*
+        String baseUrl = fixture.getProperty("base_url");
+        String layers = fixture.getProperty("layers");
+
+        URL url = new URL(baseUrl);
+        //url = new URL("http://vbox:8080/geoserver/test_shp/wms");
+
+        GetStylesResponse wmsResponse = null;
+        GetStylesRequest wmsRequest = null;
+        StyleFactory styleFactory = new StyleFactoryImpl();
+
+        WebMapServer server = new WebMapServer(url) {
+            // GetStyle is only implemented in WMS 1.1.1
+            protected void setupSpecifications() {
+                specs = new Specification[1];
+                specs[0] = new WMS1_1_1();
+            }
+        };
+
+        wmsRequest = server.createGetStylesRequest();
+        wmsRequest.setLayers(layers);
+        // Test URL
+        String queryParamters = wmsRequest.getFinalURL().getQuery();
+        Map parameters = new HashMap();
+        String[] rawParameters = queryParamters.split("&");
+        for(String param : rawParameters){
+            String [] keyValue = param.split("=");
+            parameters.put(keyValue[0],keyValue[1]);
+        }
+
+        System.out.println("-------------------> " + parameters);
+        assertEquals(4, parameters.size());
+        assertEquals("WMS", parameters.get("SERVICE"));
+        assertEquals("GetStyles", parameters.get("REQUEST"));
+        assertEquals("1.1.1", parameters.get("VERSION"));
+        assertEquals(layers, parameters.get("LAYERS"));
+
+        wmsResponse = server.issueRequest(wmsRequest);
+
+        // Set encoding of response from HTTP content-type header
+        ContentType contentType = new ContentType(wmsResponse.getContentType());
+        InputStreamReader stream;
+        if(contentType.getParameter("charset") != null)
+            stream = new InputStreamReader(wmsResponse.getInputStream(), contentType.getParameter("charset"));
+        else
+            stream = new InputStreamReader(wmsResponse.getInputStream());
+
+        Style[] styles = (new SLDParser(styleFactory, stream)).readXML();
+
+        assert styles.length > 0;
+
+        SLDTransformer styleTransform = new SLDTransformer();
+        StyledLayerDescriptorBuilder SLDBuilder = new StyledLayerDescriptorBuilder();
+
+        NamedLayerBuilder namedLayerBuilder = SLDBuilder.namedLayer();
+        namedLayerBuilder.name(layers);
+        StyleBuilder styleBuilder = namedLayerBuilder.style();
+
+        for(int i =0; i<styles.length; i++){
+            styleBuilder.reset(styles[i]);
+            styles[i] = styleBuilder.build();
+        }
+
+        NamedLayer namedLayer = namedLayerBuilder.build();
+
+        for(Style style: styles)
+            namedLayer.addStyle(style);
+
+        StyledLayerDescriptor sld = (new StyledLayerDescriptorBuilder()).build();
+        sld.addStyledLayer(namedLayer);
+        String xml = styleTransform.transform(sld);
+        assert xml.length() > 300;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         GetStylesResponse wmsResponse = null;
         GetStylesRequest wmsRequest = null;
         StyleFactory styleFactory = new StyleFactoryImpl();
@@ -62,7 +185,8 @@ public class SLDUtil {
             stream = new InputStreamReader(wmsResponse.getInputStream());
 
         return (new SLDParser(styleFactory, stream)).readXML();
-
+    */
+        return null;
     }
 
 
